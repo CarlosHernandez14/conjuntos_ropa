@@ -1,0 +1,15 @@
+create database conjuntos_ropa;
+
+use conjuntos_ropa;
+
+
+CREATE TABLE Usuario ( idUsuario INT PRIMARY KEY AUTO_INCREMENT, nombre VARCHAR(100) NOT NULL, correo VARCHAR(100) NOT NULL, contrasena VARCHAR(200) NOT NULL, rol ENUM('USUARIO', 'ADMIN') DEFAULT 'USUARIO', bloqueado BOOLEAN DEFAULT 0 );
+
+CREATE TABLE Publicacion ( idPublicacion INT PRIMARY KEY AUTO_INCREMENT, idUsuario INT NOT NULL, titulo VARCHAR(255) NOT NULL, descripcion TEXT, foto LONGBLOB, idReferencia INT DEFAULT NULL, fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (idUsuario) REFERENCES Usuario (idUsuario), FOREIGN KEY (idReferencia) REFERENCES Publicacion (idPublicacion) );
+
+CREATE TABLE Comentario ( idComentario INT AUTO_INCREMENT PRIMARY KEY, idPublicacion INT NOT NULL, idUsuario INT NOT NULL, contenido TEXT NOT NULL, fecha_comentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (idPublicacion) REFERENCES Publicacion (idPublicacion) ON DELETE CASCADE, FOREIGN KEY (idUsuario) REFERENCES Usuario (idUsuario) ON DELETE CASCADE );
+
+CREATE TABLE Reaccion ( idReaccion INT AUTO_INCREMENT PRIMARY KEY, idPublicacion INT NOT NULL, idUsuario INT NOT NULL, tipo ENUM('GUSTA', 'ENCANTA', 'DIVIERTE', 'SORPRENDE') NOT NULL, fecha_reaccion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (idPublicacion) REFERENCES Publicacion (idPublicacion) ON DELETE CASCADE, FOREIGN KEY (idUsuario) REFERENCES Usuario (idUsuario) ON DELETE CASCADE );
+
+CREATE TABLE Prenda ( idPrenda INT AUTO_INCREMENT PRIMARY KEY, idPublicacion INT NOT NULL, nombre VARCHAR(255) NOT NULL, tipo VARCHAR(100), foto LONGBLOB DEFAULT NULL, FOREIGN KEY (idPublicacion) REFERENCES Publicacion (idPublicacion) ON DELETE CASCADE );
+
