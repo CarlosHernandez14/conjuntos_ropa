@@ -327,6 +327,468 @@
             }
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // FUNCIONES PARA MANEJO DE COMENTARIOS
+
+        // Funcion para obtener todos los comentarios
+        public function getComentarios(){
+            $link = $this->open();
+            $query = "SELECT * FROM comentario";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $comentarios = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $comentarios[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $comentarios;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener los comentarios");
+            }
+        }
+
+        // Funcion para obtener un comentario por su id
+        public function getComentarioById($id){
+            $link = $this->open();
+            $query = "SELECT * FROM comentario WHERE idComentario = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $comentario = mysqli_fetch_assoc($result);
+                $this->close($link);
+                return $comentario;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener el comentario");
+            }
+        }
+
+        // Funcion para obtener los comentarios de un usuario
+        public function getComentariosByUsuario($idUsuario){
+            $link = $this->open();
+            $query = "SELECT * FROM comentario WHERE idUsuario = $idUsuario";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $comentarios = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $comentarios[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $comentarios;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener los comentarios");
+            }
+        }
+
+        // Funcion para obtener los comentarios de un conjunto
+        public function getComentariosByPublicacion($idPublicacion){
+            $link = $this->open();
+            $query = "SELECT * FROM comentario WHERE idPublicacion = $idPublicacion";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $comentarios = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $comentarios[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $comentarios;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener los comentarios");
+            }
+        }
+
+        // Funcion para guardar un comentario
+        public function createComentario($contenido, $idUsuario, $idPublicacion) {
+            $link = $this->open();
+            $query = "INSERT INTO comentario (contenido, idUsuario, idPublicacion) VALUES ('$contenido', $idUsuario, $idPublicacion)";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                // Si hay un resultado consultamos el id del comentario creado
+                $query = "SELECT * FROM comentario WHERE contenido = '$contenido' AND idUsuario = $idUsuario AND idPublicacion = $idPublicacion";
+                $result = mysqli_query($link, $query);
+
+                if (!$result) {
+                    $this->close($link);
+                    throw new Exception("Error al obtener el comentario creado");
+                }
+
+                $comentario = mysqli_fetch_assoc($result);
+                $this->close($link);
+
+                // Retornamos el id del comentario creado
+                return $comentario['idComentario'];
+            } else {
+                $this->close($link);
+                throw new Exception("Error al crear el comentario");
+            }
+        }
+
+        // Funcion para actualizar un comentario
+        public function updateComentario($id, $contenido = null) {
+            $link = $this->open();
+
+            // Obtenemos el comentario actual
+            $comentario = $this->getComentarioById($id);
+
+            if (!$comentario) {
+                $this->close($link);
+                throw new Exception("El comentario no existe");
+            }
+
+            // Si no se envia un valor para un campo, se mantiene el valor actual
+            if (is_null($contenido)) {
+                $contenido = $comentario['contenido'];
+            }
+
+            $query = "UPDATE comentario SET contenido = '$contenido' WHERE idComentario = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $this->close($link);
+                // Retornamos el id del comentario actualizado
+                return $id;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al actualizar el comentario");
+            }
+        }
+
+        // Funcion para eliminar un comentario
+        public function deleteComentario($id) {
+            $link = $this->open();
+            $query = "DELETE FROM comentario WHERE idComentario = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $this->close($link);
+                return true;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al eliminar el comentario");
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // FUNCIONES PARA MANEJO DE reacciones
+        
+        // Funcion para obtener todas las reacciones
+        public function getReacciones(){
+            $link = $this->open();
+            $query = "SELECT * FROM reaccion";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $reacciones = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $reacciones[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $reacciones;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener las reacciones");
+            }
+        }
+
+        // Funcion para obtener una reaccion por su id
+        public function getReaccionById($id){
+            $link = $this->open();
+            $query = "SELECT * FROM reaccion WHERE idReaccion = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $reaccion = mysqli_fetch_assoc($result);
+                $this->close($link);
+                return $reaccion;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener la reaccion");
+            }
+        }
+        
+        // Funcion para obtener las reacciones de un usuario
+        public function getReaccionesByUsuario($idUsuario){
+            $link = $this->open();
+            $query = "SELECT * FROM reaccion WHERE idUsuario = $idUsuario";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $reacciones = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $reacciones[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $reacciones;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener las reacciones");
+            }
+        }
+
+        // Funcion para obtener las reacciones de un conjunto
+        public function getReaccionesByPublicacion($idPublicacion){
+            $link = $this->open();
+            $query = "SELECT * FROM reaccion WHERE idPublicacion = $idPublicacion";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $reacciones = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $reacciones[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $reacciones;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener las reacciones");
+            }
+        }
+
+        // Funcion para guardar una reaccion
+        public function createReaccion($tipo, $idUsuario, $idPublicacion) {
+            $link = $this->open();
+            $query = "INSERT INTO reaccion (tipo, idUsuario, idPublicacion) VALUES ('$tipo', $idUsuario, $idPublicacion)";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                // Si hay un resultado consultamos el id de la reaccion creada
+                $query = "SELECT * FROM reaccion WHERE tipo = '$tipo' AND idUsuario = $idUsuario AND idPublicacion = $idPublicacion";
+                $result = mysqli_query($link, $query);
+
+                if (!$result) {
+                    $this->close($link);
+                    throw new Exception("Error al obtener la reaccion creada");
+                }
+
+                $reaccion = mysqli_fetch_assoc($result);
+                $this->close($link);
+
+                // Retornamos el id de la reaccion creada
+                return $reaccion['idReaccion'];
+            } else {
+                $this->close($link);
+                throw new Exception("Error al crear la reaccion");
+            }
+        }
+
+        // Funcion para actualizar una reaccion
+        public function updateReaccion($id, $tipo = null) {
+            $link = $this->open();
+
+            // Obtenemos la reaccion actual
+            $reaccion = $this->getReaccionById($id);
+
+            if (!$reaccion) {
+                $this->close($link);
+                throw new Exception("La reaccion no existe");
+            }
+
+            // Si no se envia un valor para un campo, se mantiene el valor actual
+            if (is_null($tipo)) {
+                $tipo = $reaccion['tipo'];
+            }
+
+            $query = "UPDATE reaccion SET tipo = '$tipo' WHERE idReaccion = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $this->close($link);
+                // Retornamos el id de la reaccion actualizada
+                return $id;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al actualizar la reaccion");
+            }
+        }
+
+        // Funcion para eliminar una reaccion
+        public function deleteReaccion($id) {
+            $link = $this->open();
+            $query = "DELETE FROM reaccion WHERE idReaccion = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $this->close($link);
+                return true;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al eliminar la reaccion");
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // FUNCIONES PARA MANEJO DE PRENDAS
+
+        // Funcion para obtener todas las prendas
+        public function getPrendas(){
+            $link = $this->open();
+            $query = "SELECT * FROM prenda";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $prendas = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    // Convertimos la imagen blob a base64
+                    $imageBlob = $row['foto'];
+                    $imageBase64 = base64_encode($imageBlob);
+                    $row['foto'] = $imageBase64;
+                    $prendas[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $prendas;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener las prendas");
+            }
+        }
+
+        // Funcion para obtener una prenda por su id
+        public function getPrendaById($id){
+            $link = $this->open();
+            $query = "SELECT * FROM prenda WHERE idPrenda = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $prenda = mysqli_fetch_assoc($result);
+                // Convertimos la imagen blob a base64
+                $imageBlob = $prenda['foto'];
+                $imageBase64 = base64_encode($imageBlob);
+                $prenda['foto'] = $imageBase64;
+                $this->close($link);
+                return $prenda;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener la prenda");
+            }
+        }
+
+        // Funcion para obtener las prendas de un conjunto
+        public function getPrendasByPublicacion($idPublicacion){
+            $link = $this->open();
+            $query = "SELECT * FROM prenda WHERE idPublicacion = $idPublicacion";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $prendas = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    // Convertimos la imagen blob a base64
+                    $imageBlob = $row['foto'];
+                    $imageBase64 = base64_encode($imageBlob);
+                    $row['foto'] = $imageBase64;
+                    $prendas[] = $row;
+                }
+                
+                $this->close($link);
+                
+                return $prendas;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al obtener las prendas");
+            }
+        }
+
+        // Funcion para guardar una prenda
+        public function createPrenda($nombre, $tipo, $foto, $idPublicacion) {
+            $link = $this->open();
+            $query = "INSERT INTO prenda (nombre, tipo, foto, idPublicacion) VALUES ('$nombre', '$tipo', '$foto', $idPublicacion)";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                // Si hay un resultado consultamos el id de la prenda creada
+                $query = "SELECT * FROM prenda WHERE nombre = '$nombre' AND tipo = '$tipo' AND idPublicacion = $idPublicacion";
+                $result = mysqli_query($link, $query);
+
+                if (!$result) {
+                    $this->close($link);
+                    throw new Exception("Error al obtener la prenda creada");
+                }
+
+                $prenda = mysqli_fetch_assoc($result);
+                $this->close($link);
+
+                // Retornamos el id de la prenda creada
+                return $prenda['idPrenda'];
+            } else {
+                $this->close($link);
+                throw new Exception("Error al crear la prenda");
+            }
+        }
+
+        // Funcion para actualizar una prenda
+        public function updatePrenda($id, $nombre = null, $tipo = null, $foto = null) {
+            $link = $this->open();
+
+            // Obtenemos la prenda actual
+            $prenda = $this->getPrendaById($id);
+
+            if (!$prenda) {
+                $this->close($link);
+                throw new Exception("La prenda no existe");
+            }
+
+            // Si no se envia un valor para un campo, se mantiene el valor actual
+            if (is_null($nombre)) {
+                $nombre = $prenda['nombre'];
+            }
+
+            if (is_null($tipo)) {
+                $tipo = $prenda['tipo'];
+            }
+
+            if (is_null($foto)) {
+                $foto = $prenda['foto'];
+            }
+
+            $query = "UPDATE prenda SET nombre = '$nombre', tipo = '$tipo', foto = '$foto' WHERE idPrenda = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $this->close($link);
+                // Retornamos el id de la prenda actualizada
+                return $id;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al actualizar la prenda");
+            }
+        }
+
+        // Funcion para eliminar una prenda
+        public function deletePrenda($id) {
+            $link = $this->open();
+            $query = "DELETE FROM prenda WHERE idPrenda = $id";
+            $result = mysqli_query($link, $query);
+            
+            if ($result) {
+                $this->close($link);
+                return true;
+            } else {
+                $this->close($link);
+                throw new Exception("Error al eliminar la prenda");
+            }
+        }
+
+
     }
 
 ?>
