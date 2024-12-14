@@ -320,7 +320,7 @@
             
             if ($result) {
                 $this->close($link);
-                return true;
+                return $id;
             } else {
                 $this->close($link);
                 throw new Exception("Error al eliminar la publicacion");
@@ -474,7 +474,7 @@
             
             if ($result) {
                 $this->close($link);
-                return true;
+                return $id;
             } else {
                 $this->close($link);
                 throw new Exception("Error al eliminar el comentario");
@@ -628,7 +628,7 @@
             
             if ($result) {
                 $this->close($link);
-                return true;
+                return $id;
             } else {
                 $this->close($link);
                 throw new Exception("Error al eliminar la reaccion");
@@ -781,7 +781,7 @@
             
             if ($result) {
                 $this->close($link);
-                return true;
+                return $id;
             } else {
                 $this->close($link);
                 throw new Exception("Error al eliminar la prenda");

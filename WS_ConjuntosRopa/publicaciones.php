@@ -86,11 +86,11 @@
             case 'DELETE':
                 $data = json_decode(file_get_contents('php://input'), true);
                 
-                if (!isset($data['idPublicacion'])) {
+                if (!isset($_GET['idPublicacion'])) {
                     throw new Exception("Faltan datos");
                 }
 
-                $idPublicacion = $data['idPublicacion'] ?? null;
+                $idPublicacion = $_GET['idPublicacion'];
 
                 $publicacion = $db->deletePublicacion($idPublicacion);
 
