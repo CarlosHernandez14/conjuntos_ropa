@@ -1,5 +1,6 @@
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\conjuntos_ropa\Conjuntos_ropa.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\conjuntos_ropa\Pruebas.java
+C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\dao\ExportarDatos.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\dao\WebServiceManager.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\domainclasses\Comentario.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\domainclasses\Prenda.java
@@ -14,6 +15,7 @@ C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycom
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\admin\PanelComentario.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\admin\PanelPrenda.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\admin\PanelPublicacion.java
+C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\admin\PanelUsuario.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\admin\PrendasForm.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\admin\RoundedTextField.java
 C:\Users\carlo\Documents\NetBeansProjects\conjuntos_ropa\src\main\java\com\mycompany\vistas\Login.java

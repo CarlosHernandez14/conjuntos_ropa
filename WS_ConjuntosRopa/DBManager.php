@@ -154,9 +154,11 @@
 
             if (is_null($bloqueado)) {
                 $bloqueado = $usuario['bloqueado'];
+            } else {
+                $bloqueado = $bloqueado ? 1 : 0;
             }
 
-            $query = "UPDATE usuario SET nombre = '$nombre', correo = '$correo', contrasena = SHA1('$contrasena'), rol = '$rol' WHERE idUsuario = $id";
+            $query = "UPDATE usuario SET nombre = '$nombre', correo = '$correo', rol = '$rol', bloqueado = $bloqueado WHERE idUsuario = $id";
             $result = mysqli_query($link, $query);
             
             if ($result) {

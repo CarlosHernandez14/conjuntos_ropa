@@ -13,6 +13,7 @@ import com.mycompany.domainclasses.Publicacion;
 import com.mycompany.domainclasses.RolUsuario;
 import com.mycompany.domainclasses.Usuario;
 import com.mycompany.vistas.RoundedPanel;
+import java.util.ArrayList;
 
 
 public class PanelPrenda extends RoundedPanel {
@@ -47,6 +48,20 @@ public class PanelPrenda extends RoundedPanel {
         // Cargamos la imagen
         if (this.prenda.getFoto() != null) {
             this.panelImagen.setIcon(new ImageIcon(this.prenda.getFoto()));
+        }
+        
+        if (publicacion == null) {
+            ArrayList<Publicacion> publicaciones = (ArrayList<Publicacion>)  WebServiceManager.obtenerPublicaciones();
+        
+            this.publicacion = publicaciones.stream()
+                    .filter(p -> p.getIdPublicacion() == this.prenda.getIdPublicacion())
+                    .findFirst()
+                    .orElse(null);
+            
+            if (this.publicacion == null){
+                JOptionPane.showMessageDialog(null, "No se encontro la publicacion de la prenda");
+                return;
+            }
         }
         
         // Si es admin o la publicacion es del usuario logueado

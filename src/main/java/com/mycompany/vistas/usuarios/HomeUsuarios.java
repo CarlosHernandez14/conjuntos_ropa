@@ -59,7 +59,7 @@ public class HomeUsuarios extends javax.swing.JFrame {
             );
 
         for (Publicacion publicacion : this.publicaciones) {
-            PanelPublicacion panelPublicacion = new PanelPublicacion(publicacion, this.usuario, this);
+            PanelPublicacion panelPublicacion = new PanelPublicacion(publicacion, this.usuario, this, null);
             this.panelListPublicaciones.add(panelPublicacion);
 
             // Agregamos un rigid area para separar los paneles

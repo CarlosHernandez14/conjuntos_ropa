@@ -42,7 +42,7 @@ public class ComentariosForm extends javax.swing.JFrame {
         this.containerListComments.removeAll();
 
         for (Comentario comentario : this.publicacion.getComentarios()) {
-            PanelComentario pComment = new PanelComentario(comentario);
+            PanelComentario pComment = new PanelComentario(comentario, this.usuarioLogueado, this);
             
             pComment.setSize(this.containerListComments.getWidth(), pComment.getHeight());
             
@@ -54,6 +54,20 @@ public class ComentariosForm extends javax.swing.JFrame {
 
         this.containerListComments.revalidate();
         this.containerListComments.repaint();
+    }
+    
+    public void actualizarComentarios() {
+        
+        ArrayList<Comentario> comentariosActualizados = (ArrayList<Comentario>) WebServiceManager.obtenerComentariosPorPublicacion(this.publicacion.getIdPublicacion());
+        
+        if (comentariosActualizados == null) {
+            JOptionPane.showMessageDialog(null, "Error al obtener los comentarios actualizados");
+            return;
+        }
+        
+        this.publicacion.setComentarios(comentariosActualizados);
+        
+        cargarComentarios();
     }
 
     /**

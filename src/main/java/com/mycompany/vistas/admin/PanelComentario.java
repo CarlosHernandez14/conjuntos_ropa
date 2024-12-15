@@ -6,6 +6,7 @@ package com.mycompany.vistas.admin;
 
 import com.mycompany.dao.WebServiceManager;
 import com.mycompany.domainclasses.Comentario;
+import com.mycompany.domainclasses.RolUsuario;
 import com.mycompany.domainclasses.Usuario;
 import javax.swing.JOptionPane;
 
@@ -13,6 +14,8 @@ import javax.swing.JOptionPane;
 public class PanelComentario extends javax.swing.JPanel {
 
     private Comentario comentario;
+    private Usuario usuarioLogueado;
+    private ComentariosForm comentariosForm;
     
     /**
      * Creates new form PanelComentario
@@ -21,15 +24,19 @@ public class PanelComentario extends javax.swing.JPanel {
         initComponents();
     }
     
-    public PanelComentario(Comentario comentario) {
+    public PanelComentario(Comentario comentario, Usuario usuarioLogueado, ComentariosForm comentariosForm) {
         initComponents();
-        
+        this.usuarioLogueado = usuarioLogueado;
         this.comentario = comentario;
-        
+        this.comentariosForm = comentariosForm;
         cargarDatos();
     }
     
     private void cargarDatos() {
+        
+        if (this.usuarioLogueado.getRol() == RolUsuario.ADMIN) {
+            this.bntEliminar.setVisible(true);
+        } else this.bntEliminar.setVisible(false);
         
         this.textAreaComentario.setText(comentario.getContenido());
         
@@ -58,6 +65,7 @@ public class PanelComentario extends javax.swing.JPanel {
         labelUsername = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         textAreaComentario = new javax.swing.JTextArea();
+        bntEliminar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(new org.edisoncor.gui.util.DropShadowBorder());
@@ -84,32 +92,62 @@ public class PanelComentario extends javax.swing.JPanel {
         textAreaComentario.setEnabled(false);
         jScrollPane1.setViewportView(textAreaComentario);
 
+        bntEliminar.setBackground(new java.awt.Color(153, 0, 0));
+        bntEliminar.setFont(new java.awt.Font("Times New Roman", 1, 12)); // NOI18N
+        bntEliminar.setForeground(new java.awt.Color(255, 255, 255));
+        bntEliminar.setText("Eliminar");
+        bntEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bntEliminarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(labelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(44, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(labelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bntEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(44, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelUsername)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelUsername)
+                    .addComponent(bntEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void bntEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bntEliminarActionPerformed
+        // TODO add your handling code here:
+        
+        int idComentario = WebServiceManager.eliminarComentario(this.comentario.getIdComentario());
+        
+        if (idComentario == -1) {
+            JOptionPane.showMessageDialog(null, "No se pudo eliminar el comentario");
+            return;
+        }
+        
+        this.comentariosForm.actualizarComentarios();
+       
+    }//GEN-LAST:event_bntEliminarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bntEliminar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelUsername;
     private javax.swing.JTextArea textAreaComentario;

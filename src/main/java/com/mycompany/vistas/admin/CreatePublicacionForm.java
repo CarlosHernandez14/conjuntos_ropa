@@ -248,6 +248,10 @@ public class CreatePublicacionForm extends javax.swing.JFrame {
 
         // Guardamos la publicacion
         Publicacion publicacion = new Publicacion(this.usuarioLogueado.getIdUsuario(), titulo, description);
+        
+        if (idReferencia > 0) {
+            publicacion.setIdReferencia(idReferencia);
+        }
 
         if (this.fotoCargadaBytes != null && this.fotoCargadaBytes.length > 0) {
             publicacion.setFoto(this.fotoCargadaBytes);
@@ -257,7 +261,7 @@ public class CreatePublicacionForm extends javax.swing.JFrame {
 
         if (idPublicacion != -1) {
             JOptionPane.showMessageDialog(null, "Publicacion guardada con exito");
-            this.homeUsuarios.actualizarPublicaciones();
+            if (this.homeUsuarios != null) this.homeUsuarios.actualizarPublicaciones();
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(null, "Error al guardar la publicacion");

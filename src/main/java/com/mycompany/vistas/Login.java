@@ -206,7 +206,7 @@ public class Login extends javax.swing.JFrame {
         // Iniciamos sesion
         Usuario usuario = WebServiceManager.iniciarSesion(correo, password);
         
-        if (usuario == null) {
+        if (usuario == null || usuario.isBloqueado()) {
             JOptionPane.showMessageDialog(this, "Usuario y/o contraseña incorrectos");
             return;
         }

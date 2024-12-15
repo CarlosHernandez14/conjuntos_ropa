@@ -54,6 +54,8 @@ public class WebServiceManager {
             String url = URL + "usuarios.php?" + "correo=" + correo + "&contrasena=" + contrasena;
 
             String response = Request.Get(url).execute().returnContent().asString();
+            
+            //System.out.println("REQUEST FOR LOGIN:" + url);
 
             JSONParser parser = new JSONParser();
             JSONObject resultJson = (JSONObject) parser.parse(response);
@@ -255,6 +257,8 @@ public class WebServiceManager {
             }
             usuarioJson.put("bloqueado", usuario.isBloqueado());
 
+            System.out.println("REQUEST TO UPDATE USER: "+ usuarioJson.toString());
+            
             String response = Request.Put(url)
                     .bodyString(usuarioJson.toJSONString(), ContentType.APPLICATION_JSON)
                     .execute().returnContent().asString();
@@ -486,6 +490,36 @@ public class WebServiceManager {
             System.out.println("Error al guardar comentario: " + ex.getMessage());
         } catch (Exception ex) {
             System.out.println("Error al guardar comentario: " + ex.getMessage());
+        }
+        return -1;
+    }
+
+    // Funcion  para eliminar un comentario
+    public static int eliminarComentario(int idComentario) {
+        String url = URL + "comentarios.php?idComentario=" + idComentario;
+        try {
+
+            String response = Request.Delete(url).execute().returnContent().asString();
+
+            JSONParser parser = new JSONParser();
+
+            JSONObject resultJson = (JSONObject) parser.parse(response);
+
+            if (!Boolean.parseBoolean(resultJson.get("OK").toString())) {
+                String errorMessage = (String) resultJson.get("error");
+                throw new Exception("Error en la solicitud: " + errorMessage);
+            }
+
+            int idComentarioEliminado = Integer.parseInt(resultJson.get("data").toString());
+
+            return idComentarioEliminado;
+
+        } catch (IOException ex) {
+            System.out.println("Error al eliminar comentario: " + ex.getMessage());
+        } catch (ParseException ex) {
+            System.out.println("Error al eliminar comentario: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Error al eliminar comentario: " + ex.getMessage());
         }
         return -1;
     }
@@ -757,6 +791,52 @@ public class WebServiceManager {
         return null;
     }
 
+    // Funcion para obtener todas las prendas
+    public static List<Prenda> obtenerPrendas() {
+        try {
+            String url = URL + "prendas.php";
+
+            String response = Request.Get(url).execute().returnContent().asString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject resultJson = (JSONObject) parser.parse(response);
+
+            if (!Boolean.parseBoolean(resultJson.get("OK").toString())) {
+                String errorMessage = (String) resultJson.get("error");
+                throw new Exception("Error en la solicitud: " + errorMessage);
+            }
+
+            JSONArray prendasJson = (JSONArray) resultJson.get("data");
+
+            List<Prenda> prendas = new ArrayList<>();
+
+            for (Object prendaObject : prendasJson) {
+                JSONObject prendaJson = (JSONObject) prendaObject;
+
+                int idPrenda = Integer.parseInt(prendaJson.get("idPrenda").toString());
+                int idPublicacion = Integer.parseInt(prendaJson.get("idPublicacion").toString());
+                String nombre = prendaJson.get("nombre").toString();
+                String tipo = prendaJson.get("tipo").toString();
+
+                byte[] fotoBytes = Base64.getDecoder().decode(prendaJson.get("foto").toString());
+
+                Prenda prenda = new Prenda(idPrenda, idPublicacion, nombre, tipo, fotoBytes);
+
+                prendas.add(prenda);
+            }
+
+            return prendas;
+
+        } catch (IOException ex) {
+            System.out.println("Error al obtener prendas: " + ex.getMessage());
+        } catch (ParseException ex) {
+            System.out.println("Error al obtener prendas: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Error al obtener prendas: " + ex.getMessage());
+        }
+        return null;
+    }
+
     // Funcion para guardar una prenda
     public static int guardarPrenda(Prenda prenda) {
         String url = URL + "prendas.php";
@@ -917,7 +997,8 @@ public class WebServiceManager {
 
                 byte[] fotoBytes = Base64.getDecoder().decode(publicacionJson.get("foto").toString());
 
-                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia") == null ? "0" : publicacionJson.get("idReferencia").toString());
+                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia") == null ? "0"
+                        : publicacionJson.get("idReferencia").toString());
 
                 // Consultamos las prendas de la publicacion
                 ArrayList<Prenda> prendas = (ArrayList<Prenda>) obtenerPrendasPorPublicacion(idPublicacion);
@@ -973,8 +1054,7 @@ public class WebServiceManager {
                 int idPublicacion = Integer.parseInt(publicacionJson.get("idPublicacion").toString());
                 String titulo = publicacionJson.get("titulo").toString();
                 String descripcion = publicacionJson.get("descripcion").toString();
-                
-                
+
                 String fechaString = publicacionJson.get("fecha_creacion").toString();
 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -987,12 +1067,11 @@ public class WebServiceManager {
 
                 // Convertimos LocalDate a java.sql.Date
                 Date fechaSQL = Date.valueOf(localDate);
-                
-                
 
                 byte[] fotoBytes = Base64.getDecoder().decode(publicacionJson.get("foto").toString());
 
-                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia") == null ? "0" : publicacionJson.get("idReferencia").toString());
+                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia") == null ? "0"
+                        : publicacionJson.get("idReferencia").toString());
 
                 // Consultamos las prendas de la publicacion
                 ArrayList<Prenda> prendas = (ArrayList<Prenda>) obtenerPrendasPorPublicacion(idPublicacion);
@@ -1039,14 +1118,15 @@ public class WebServiceManager {
                 publicacionJson.put("foto", Base64.getEncoder().encodeToString(publicacion.getFoto()));
             }
 
-//            System.out.println("JSON REQUEST TO SEND: " + publicacionJson.toJSONString());
-//            try (FileWriter file = new FileWriter("log_publicacion.json")) {
-//                file.write(publicacionJson.toJSONString());
-//                file.flush();
-//                System.out.println("JSON escrito en el archivo log_publicacion.json");
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            // System.out.println("JSON REQUEST TO SEND: " +
+            // publicacionJson.toJSONString());
+            // try (FileWriter file = new FileWriter("log_publicacion.json")) {
+            // file.write(publicacionJson.toJSONString());
+            // file.flush();
+            // System.out.println("JSON escrito en el archivo log_publicacion.json");
+            // } catch (IOException e) {
+            // e.printStackTrace();
+            // }
 
             String response = Request.Post(url)
                     .bodyString(publicacionJson.toJSONString(), ContentType.APPLICATION_JSON)
@@ -1056,7 +1136,7 @@ public class WebServiceManager {
 
             JSONObject resultJson = (JSONObject) parser.parse(response);
 
-            //System.out.println("RESSULT AL GUARDAR PUB:" + resultJson.toString());
+            // System.out.println("RESSULT AL GUARDAR PUB:" + resultJson.toString());
             if (!Boolean.parseBoolean(resultJson.get("OK").toString())) {
                 String errorMessage = (String) resultJson.get("error");
                 throw new Exception("Error en la solicitud: " + errorMessage);

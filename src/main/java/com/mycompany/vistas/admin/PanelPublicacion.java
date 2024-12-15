@@ -22,6 +22,7 @@ public class PanelPublicacion extends javax.swing.JPanel {
     private Usuario usuarioLogueado;
     private Reaccion reaccion;
     private HomeUsuarios homeUsuarios;
+    private HomeAdmin homeAdmin;
 
     /**
      * Creates new form PanelPublicacion
@@ -30,11 +31,11 @@ public class PanelPublicacion extends javax.swing.JPanel {
         initComponents();
     }
 
-    public PanelPublicacion(Publicacion publicacion, Usuario usuarioLogueado, HomeUsuarios homeUsuarios) {
+    public PanelPublicacion(Publicacion publicacion, Usuario usuarioLogueado, HomeUsuarios homeUsuarios, HomeAdmin homeAdmin) {
         initComponents();
         this.publicacion = publicacion;
         this.usuarioLogueado = usuarioLogueado;
-
+        this.homeAdmin = homeAdmin;
         this.homeUsuarios = homeUsuarios;
         cargarDatos();
     }
@@ -135,6 +136,11 @@ public class PanelPublicacion extends javax.swing.JPanel {
         popupMenu.add(itemAddPrendas);
 
         itemDeletePost.setText("Eliminar publicacion");
+        itemDeletePost.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemDeletePostActionPerformed(evt);
+            }
+        });
         popupMenu.add(itemDeletePost);
 
         menuReaction.setBackground(new java.awt.Color(255, 255, 255));
@@ -453,6 +459,23 @@ public class PanelPublicacion extends javax.swing.JPanel {
         
         new PrendasForm(this.publicacion, this.usuarioLogueado).setVisible(true);
     }//GEN-LAST:event_btnVerPrendasActionPerformed
+
+    private void itemDeletePostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemDeletePostActionPerformed
+        // TODO add your handling code here:
+        
+        int idPublicacion = WebServiceManager.eliminarPublicacion(this.publicacion.getIdPublicacion());
+        
+        if (idPublicacion == -1) {
+            JOptionPane.showMessageDialog(null, "No se pudo eliminar la publicacion");
+            return;
+        }
+        
+        JOptionPane.showMessageDialog(null, "La publicacion se elimino con exito");
+        
+        if (this.homeUsuarios != null) this.homeUsuarios.actualizarPublicaciones();
+        
+        if (this.homeAdmin != null) this.homeAdmin.actualizarPublicaciones();
+    }//GEN-LAST:event_itemDeletePostActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -8,6 +8,7 @@ import com.mycompany.dao.WebServiceManager;
 import com.mycompany.domainclasses.Comentario;
 import com.mycompany.domainclasses.Publicacion;
 import com.mycompany.domainclasses.Reaccion;
+import com.mycompany.domainclasses.Usuario;
 import java.util.ArrayList;
 
 /**
@@ -18,9 +19,9 @@ public class Pruebas {
 
     public static void main(String[] args) {
 
-        ArrayList<Publicacion> pubs = (ArrayList<Publicacion>) WebServiceManager.obtenerPublicacionesPorUsuario(11);
-        System.out.println("PUBLICACIONES");
-        pubs.forEach(System.out::println);
+//        ArrayList<Publicacion> pubs = (ArrayList<Publicacion>) WebServiceManager.obtenerPublicacionesPorUsuario(11);
+//        System.out.println("PUBLICACIONES");
+//        pubs.forEach(System.out::println);
         //ArrayList<Reaccion> reacciones = (ArrayList<Reaccion>) WebServiceManager.obtenerReaccionesPorPublicacion(9);
 //
 //        System.out.println("REACCIONES");
@@ -29,6 +30,9 @@ public class Pruebas {
 //        System.out.println("COMENTARIOS DE 9 PUB");
 //        comentarios.forEach(System.out::println);
 
+        ArrayList<Usuario> usuarios = (ArrayList<Usuario>) WebServiceManager.obtenerUsuarios();
+        System.out.println("USURAIOS");
+        usuarios.forEach(System.out::println);
     }
 
 }
