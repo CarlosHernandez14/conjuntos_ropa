@@ -102,6 +102,30 @@ public class Publicacion {
         this.fecha_creacion = fecha_creacion;
     }
 
+    public ArrayList<Prenda> getPrendas() {
+        return prendas;
+    }
+
+    public void setPrendas(ArrayList<Prenda> prendas) {
+        this.prendas = prendas;
+    }
+
+    public ArrayList<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(ArrayList<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public ArrayList<Reaccion> getReacciones() {
+        return reacciones;
+    }
+
+    public void setReacciones(ArrayList<Reaccion> reacciones) {
+        this.reacciones = reacciones;
+    }
+    
     @Override
     public String toString() {
         return "Publicacion{" + "idPublicacion=" + idPublicacion + ", idUsuario=" + idUsuario + ", titulo=" + titulo + ", descripcion=" + descripcion + ", foto=" + foto + ", idReferencia=" + idReferencia + ", fecha_creacion=" + fecha_creacion + '}';

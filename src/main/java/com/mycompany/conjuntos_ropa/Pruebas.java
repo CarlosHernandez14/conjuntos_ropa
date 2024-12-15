@@ -4,15 +4,31 @@
  */
 package com.mycompany.conjuntos_ropa;
 
+import com.mycompany.dao.WebServiceManager;
+import com.mycompany.domainclasses.Comentario;
+import com.mycompany.domainclasses.Publicacion;
+import com.mycompany.domainclasses.Reaccion;
+import java.util.ArrayList;
+
 /**
  *
  * @author carlo
  */
 public class Pruebas {
-    
+
     public static void main(String[] args) {
-        
-        
+
+        ArrayList<Publicacion> pubs = (ArrayList<Publicacion>) WebServiceManager.obtenerPublicacionesPorUsuario(11);
+        System.out.println("PUBLICACIONES");
+        pubs.forEach(System.out::println);
+        //ArrayList<Reaccion> reacciones = (ArrayList<Reaccion>) WebServiceManager.obtenerReaccionesPorPublicacion(9);
+//
+//        System.out.println("REACCIONES");
+//        reacciones.forEach(System.out::println);
+//        ArrayList<Comentario> comentarios = (ArrayList<Comentario>) WebServiceManager.obtenerComentariosPorPublicacion(9);
+//        System.out.println("COMENTARIOS DE 9 PUB");
+//        comentarios.forEach(System.out::println);
+
     }
-    
+
 }

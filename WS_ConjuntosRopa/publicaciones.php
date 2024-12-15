@@ -36,20 +36,25 @@
             case 'POST':
                 $data = json_decode(file_get_contents('php://input'), true);
                 
-                if (!isset($data['titulo']) || !isset($data['contenido']) || !isset($data['idUsuario'])) {
+                if (!isset($data['titulo']) || !isset($data['descripcion']) || !isset($data['idUsuario'])) {
                     throw new Exception("Faltan datos");
                 }
 
-                $titulo = $data['titulo'] ?? null;
-                $contenido = $data['contenido'] ?? null;
-                $idUsuario = $data['idUsuario'] ?? null;
+                $titulo = $data['titulo'];
+                $descripcion = $data['descripcion'];
+                $idUsuario = $data['idUsuario'];
                 $foto = $data['foto'] ?? null;
+
+                // Validar que la foto sea una cadena base64 válida
+                if ($foto && base64_encode(base64_decode($foto, true)) !== $foto) {
+                    throw new Exception("La foto proporcionada no está en formato base64 válido");
+                }
 
                 if ($foto) {
                     $foto = base64_decode($foto);
                 }
 
-                $publicacion = $db->createPublicacion($titulo, $contenido, $foto, $idUsuario);
+                $publicacion = $db->createPublicacion($titulo, $descripcion, $foto, $idUsuario);
 
                 echo json_encode([
                     'OK' => true,

@@ -245,36 +245,36 @@
         // Funcion para guardar un conjunto
         public function createPublicacion($titulo, $descripcion, $foto = null, $idUsuario) {
             $link = $this->open();
-            $query = "INSERT INTO publicacion (titulo, descripcion, foto, idUsuario) VALUES ('$titulo', '$descripcion', '$foto', $idUsuario)";
-
+            
             if (is_null($foto)) {
-                $query = "INSERT INTO publicacion (titulo, descripcion, idUsuario) VALUES ('$titulo', '$descripcion', $idUsuario)";
-            }
-            
-            $result = mysqli_query($link, $query);
-            
-            if ($result) {
-                // Si hay un resultado consultamos el id del publicacion creado
-                $query = "SELECT * FROM publicacion WHERE titulo = '$titulo' AND descripcion = '$descripcion' AND idUsuario = $idUsuario";
-                $result = mysqli_query($link, $query);
-
-                if (!$result) {
-                    $this->close($link);
-                    throw new Exception("Error al obtener el publicacion creado");
-                }
-
-                $publicacion = mysqli_fetch_assoc($result);
-                $this->close($link);
-
-                // Retornamos el id del publicacion creado
-                return $publicacion['iPublicacion'];
+                $query = "INSERT INTO publicacion (titulo, descripcion, idUsuario) VALUES (?, ?, ?)";
+                $stmt = $link->prepare($query);
+                $stmt->bind_param("ssi", $titulo, $descripcion, $idUsuario);
             } else {
+                $query = "INSERT INTO publicacion (titulo, descripcion, foto, idUsuario) VALUES (?, ?, ?, ?)";
+                $stmt = $link->prepare($query);
+                $stmt->bind_param("sssi", $titulo, $descripcion, $foto, $idUsuario);
+            }
+        
+            if ($stmt->execute()) {
+                // Obtener el ID de la publicación creada
+                $idPublicacion = $stmt->insert_id;
+                
+                $stmt->close();
+
                 $this->close($link);
-                throw new Exception("Error al crear la publicacion");
+        
+                // Consultar y retornar la publicación creada
+                return $idPublicacion;
+            } else {
+                $stmt->close();
+                $this->close($link);
+                throw new Exception("Error al crear la publicacion: " . $link->error);
             }
         }
+        
 
-        // Funcion para actualizar un conjunto
+        // Funcion para actualizar un conjunto (usando prepared statements)
         public function updatePublicacion($id, $titulo = null, $descripcion = null, $foto = null) {
             $link = $this->open();
 
@@ -283,7 +283,7 @@
 
             if (!$publicacion) {
                 $this->close($link);
-                throw new Exception("La publicacion no existe");
+                throw new Exception("El conjunto no existe");
             }
 
             // Si no se envia un valor para un campo, se mantiene el valor actual
@@ -299,16 +299,20 @@
                 $foto = $publicacion['foto'];
             }
 
-            $query = "UPDATE publicacion SET titulo = '$titulo', descripcion = '$descripcion', foto = '$foto' WHERE idPublicacion = $id";
-            $result = mysqli_query($link, $query);
+            $query = "UPDATE publicacion SET titulo = ?, descripcion = ?, foto = ? WHERE idPublicacion = ?";
+            $stmt = $link->prepare($query);
+            $stmt->bind_param("sssi", $titulo, $descripcion, $foto, $id);
+            $result = $stmt->execute();
             
             if ($result) {
+                $stmt->close();
                 $this->close($link);
-                // Retornamos el id del publicacion actualizado
+                // Retornamos el id del conjunto actualizado
                 return $id;
             } else {
+                $stmt->close();
                 $this->close($link);
-                throw new Exception("Error al actualizar la publicacion");
+                throw new Exception("Error al actualizar el conjunto: " . $link->error);
             }
         }
 
@@ -708,34 +712,38 @@
             }
         }
 
-        // Funcion para guardar una prenda
+        // Funcion para guardar una prenda (usando prepared statements)
         public function createPrenda($nombre, $tipo, $foto, $idPublicacion) {
             $link = $this->open();
-            $query = "INSERT INTO prenda (nombre, tipo, foto, idPublicacion) VALUES ('$nombre', '$tipo', '$foto', $idPublicacion)";
-            $result = mysqli_query($link, $query);
-            
-            if ($result) {
-                // Si hay un resultado consultamos el id de la prenda creada
-                $query = "SELECT * FROM prenda WHERE nombre = '$nombre' AND tipo = '$tipo' AND idPublicacion = $idPublicacion";
-                $result = mysqli_query($link, $query);
 
-                if (!$result) {
-                    $this->close($link);
-                    throw new Exception("Error al obtener la prenda creada");
-                }
-
-                $prenda = mysqli_fetch_assoc($result);
-                $this->close($link);
-
-                // Retornamos el id de la prenda creada
-                return $prenda['idPrenda'];
+            if (is_null($foto)) {
+                $query = "INSERT INTO prenda (nombre, tipo, idPublicacion) VALUES (?, ?, ?)";
+                $stmt = $link->prepare($query);
+                $stmt->bind_param("ssi", $nombre, $tipo, $idPublicacion);
             } else {
+                $query = "INSERT INTO prenda (nombre, tipo, foto, idPublicacion) VALUES (?, ?, ?, ?)";
+                $stmt = $link->prepare($query);
+                $stmt->bind_param("sssi", $nombre, $tipo, $foto, $idPublicacion);
+            }
+        
+            if ($stmt->execute()) {
+                // Obtener el ID de la prenda creada
+                $idPrenda = $stmt->insert_id;
+                
+                $stmt->close();
+
                 $this->close($link);
-                throw new Exception("Error al crear la prenda");
+        
+                // Consultar y retornar la prenda creada
+                return $idPrenda;
+            } else {
+                $stmt->close();
+                $this->close($link);
+                throw new Exception("Error al crear la prenda: " . $link->error);
             }
         }
 
-        // Funcion para actualizar una prenda
+        // Funcion para actualizar una prenda (usando prepared statements)
         public function updatePrenda($id, $nombre = null, $tipo = null, $foto = null) {
             $link = $this->open();
 
@@ -760,16 +768,20 @@
                 $foto = $prenda['foto'];
             }
 
-            $query = "UPDATE prenda SET nombre = '$nombre', tipo = '$tipo', foto = '$foto' WHERE idPrenda = $id";
-            $result = mysqli_query($link, $query);
+            $query = "UPDATE prenda SET nombre = ?, tipo = ?, foto = ? WHERE idPrenda = ?";
+            $stmt = $link->prepare($query);
+            $stmt->bind_param("sssi", $nombre, $tipo, $foto, $id);
+            $result = $stmt->execute();
             
             if ($result) {
+                $stmt->close();
                 $this->close($link);
                 // Retornamos el id de la prenda actualizada
                 return $id;
             } else {
+                $stmt->close();
                 $this->close($link);
-                throw new Exception("Error al actualizar la prenda");
+                throw new Exception("Error al actualizar la prenda: " . $link->error);
             }
         }
 

@@ -18,6 +18,7 @@ import com.mycompany.domainclasses.Usuario;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -25,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -145,6 +147,54 @@ public class WebServiceManager {
         return null;
     }
 
+    // Funcion para obtener un usuario por id
+    public static Usuario obtenerUsuarioPorId(int idUsuario) {
+        try {
+            System.out.println("");
+            String url = URL + "usuarios.php?" + "idUsuario=" + idUsuario;
+
+            String response = Request.Get(url).execute().returnContent().asString();
+
+            JSONParser parser = new JSONParser();
+            JSONObject resultJson = (JSONObject) parser.parse(response);
+
+            System.out.println("RESPONSE JSON" + resultJson.toString());
+
+            if (!Boolean.parseBoolean(resultJson.get("OK").toString())) {
+                String errorMessage = (String) resultJson.get("error");
+                throw new Exception("Error en la solicitud: " + errorMessage);
+            }
+
+            JSONObject usuarioJson = (JSONObject) resultJson.get("data");
+
+            String nombre = usuarioJson.get("nombre").toString();
+            String correo = usuarioJson.get("correo").toString();
+            String contrasena = usuarioJson.get("contrasena").toString();
+            boolean bloqueado = usuarioJson.get("bloqueado").toString().equals("1");
+
+            String rolString = usuarioJson.get("rol").toString();
+            RolUsuario rol;
+
+            try {
+                rol = RolUsuario.valueOf(rolString);
+            } catch (IllegalArgumentException ex) {
+                throw new Exception("Error al obtener el rol del usuario");
+            }
+
+            Usuario usuario = new Usuario(idUsuario, nombre, correo, contrasena, rol, bloqueado);
+
+            return usuario;
+
+        } catch (IOException ex) {
+            System.out.println("Error al obtener usuario por id: " + ex.getMessage());
+        } catch (ParseException ex) {
+            System.out.println("Error al obtener usuario por id: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Error al obtener usuario por id: " + ex.getMessage());
+        }
+        return null;
+    }
+
     // Funcion para guardar un usuario
     public static int guardarUsuario(Usuario usuario) {
         String url = URL + "usuarios.php";
@@ -234,7 +284,6 @@ public class WebServiceManager {
 
     ////////////////////////////////////////////////////////////////////////////
     // Funciones para obtener los comentarios
-
     // Funcion para obtener todos los comentarios
     public static List<Comentario> obtenerComentarios() {
         try {
@@ -261,9 +310,21 @@ public class WebServiceManager {
                 String contenido = comentarioJson.get("contenido").toString();
                 int idUsuario = Integer.parseInt(comentarioJson.get("idUsuario").toString());
                 int idPublicacion = Integer.parseInt(comentarioJson.get("idPublicacion").toString());
-                Date fecha = Date.valueOf(comentarioJson.get("fecha").toString());
 
-                Comentario comentario = new Comentario(idComentario, idPublicacion, idUsuario, contenido, fecha);
+                String fechaString = comentarioJson.get("fecha_comentario").toString();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // Parsea el String a LocalDateTime
+                LocalDateTime localDateTime = LocalDateTime.parse(fechaString, formatter);
+
+                // Si necesitas solo la fecha (sin tiempo), extrae LocalDate
+                java.time.LocalDate localDate = localDateTime.toLocalDate();
+
+                // Convertimos LocalDate a java.sql.Date
+                Date fechaSQL = Date.valueOf(localDate);
+
+                Comentario comentario = new Comentario(idComentario, idPublicacion, idUsuario, contenido, fechaSQL);
 
                 comentarios.add(comentario);
             }
@@ -305,9 +366,21 @@ public class WebServiceManager {
                 int idComentario = Integer.parseInt(comentarioJson.get("idComentario").toString());
                 String contenido = comentarioJson.get("contenido").toString();
                 int idUsuario = Integer.parseInt(comentarioJson.get("idUsuario").toString());
-                Date fecha = Date.valueOf(comentarioJson.get("fecha").toString());
 
-                Comentario comentario = new Comentario(idComentario, idPublicacion, idUsuario, contenido, fecha);
+                String fechaString = comentarioJson.get("fecha_comentario").toString();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // Parsea el String a LocalDateTime
+                LocalDateTime localDateTime = LocalDateTime.parse(fechaString, formatter);
+
+                // Si necesitas solo la fecha (sin tiempo), extrae LocalDate
+                java.time.LocalDate localDate = localDateTime.toLocalDate();
+
+                // Convertimos LocalDate a java.sql.Date
+                Date fechaSQL = Date.valueOf(localDate);
+
+                Comentario comentario = new Comentario(idComentario, idPublicacion, idUsuario, contenido, fechaSQL);
 
                 comentarios.add(comentario);
             }
@@ -349,9 +422,21 @@ public class WebServiceManager {
                 int idComentario = Integer.parseInt(comentarioJson.get("idComentario").toString());
                 String contenido = comentarioJson.get("contenido").toString();
                 int idPublicacion = Integer.parseInt(comentarioJson.get("idPublicacion").toString());
-                Date fecha = Date.valueOf(comentarioJson.get("fecha").toString());
 
-                Comentario comentario = new Comentario(idComentario, idPublicacion, idUsuario, contenido, fecha);
+                String fechaString = comentarioJson.get("fecha_comentario").toString();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // Parsea el String a LocalDateTime
+                LocalDateTime localDateTime = LocalDateTime.parse(fechaString, formatter);
+
+                // Si necesitas solo la fecha (sin tiempo), extrae LocalDate
+                java.time.LocalDate localDate = localDateTime.toLocalDate();
+
+                // Convertimos LocalDate a java.sql.Date
+                Date fechaSQL = Date.valueOf(localDate);
+
+                Comentario comentario = new Comentario(idComentario, idPublicacion, idUsuario, contenido, fechaSQL);
 
                 comentarios.add(comentario);
             }
@@ -407,7 +492,6 @@ public class WebServiceManager {
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Funciones para manejar las reacciones de las publicaciones
-
     // Funcion para obtener las reacciones de una publicacion
     public static List<Reaccion> obtenerReaccionesPorPublicacion(int idPublicacion) {
         try {
@@ -441,9 +525,20 @@ public class WebServiceManager {
                     throw new Exception("Error al obtener el tipo de reaccion");
                 }
 
-                Date fecha = Date.valueOf(reaccionJson.get("fecha").toString());
+                String fechaString = reaccionJson.get("fecha_reaccion").toString();
 
-                Reaccion reaccion = new Reaccion(idReaccion, idPublicacion, idUsuario, tipo, fecha);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // Parsea el String a LocalDateTime
+                LocalDateTime localDateTime = LocalDateTime.parse(fechaString, formatter);
+
+                // Si necesitas solo la fecha (sin tiempo), extrae LocalDate
+                java.time.LocalDate localDate = localDateTime.toLocalDate();
+
+                // Convertimos LocalDate a java.sql.Date
+                Date fechaSQL = Date.valueOf(localDate);
+
+                Reaccion reaccion = new Reaccion(idReaccion, idPublicacion, idUsuario, tipo, fechaSQL);
 
                 reacciones.add(reaccion);
             }
@@ -451,9 +546,9 @@ public class WebServiceManager {
             return reacciones;
 
         } catch (IOException ex) {
-            System.out.println("Error al obtener reacciones por publicacion: " + ex.getMessage());
+            System.out.println("IO Error al obtener reacciones por publicacion: " + ex.getMessage());
         } catch (ParseException ex) {
-            System.out.println("Error al obtener reacciones por publicacion: " + ex.getMessage());
+            System.out.println("Error al parsear obtener reacciones por publicacion: " + ex.getMessage());
         } catch (Exception ex) {
             System.out.println("Error al obtener reacciones por publicacion: " + ex.getMessage());
         }
@@ -549,6 +644,42 @@ public class WebServiceManager {
         return -1;
     }
 
+    // Funcion para actualizar una reaccion
+    public static int actualizarReaccion(Reaccion reaccion) {
+        String url = URL + "reacciones.php";
+        try {
+
+            JSONObject reaccionJson = new JSONObject();
+            reaccionJson.put("idReaccion", reaccion.getIdReaccion());
+            reaccionJson.put("tipo", reaccion.getTipo().toString());
+
+            String response = Request.Put(url)
+                    .bodyString(reaccionJson.toJSONString(), ContentType.APPLICATION_JSON)
+                    .execute().returnContent().asString();
+
+            JSONParser parser = new JSONParser();
+
+            JSONObject resultJson = (JSONObject) parser.parse(response);
+
+            if (!Boolean.parseBoolean(resultJson.get("OK").toString())) {
+                String errorMessage = (String) resultJson.get("error");
+                throw new Exception("Error en la solicitud: " + errorMessage);
+            }
+
+            int idReaccion = Integer.parseInt(resultJson.get("data").toString());
+
+            return idReaccion;
+
+        } catch (IOException ex) {
+            System.out.println("Error al actualizar reaccion: " + ex.getMessage());
+        } catch (ParseException ex) {
+            System.out.println("Error al actualizar reaccion: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Error al actualizar reaccion: " + ex.getMessage());
+        }
+        return -1;
+    }
+
     // Funcion para eliminar una reaccion
     public static int eliminarReaccion(int idReaccion) {
         String url = URL + "reacciones.php?idReaccion=" + idReaccion;
@@ -581,7 +712,6 @@ public class WebServiceManager {
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Funciones para manejar las prendas
-
     // Funcion para obtener todas las prendas de una publicacion
     public static List<Prenda> obtenerPrendasPorPublicacion(int idPublicacion) {
         try {
@@ -744,7 +874,6 @@ public class WebServiceManager {
 
     ////////////////////////////////////////////////////////////////////////////////////////
     // Funciones para manejar las publicaciones
-
     // Funcion para obtener todas las publicaciones
     public static List<Publicacion> obtenerPublicaciones() {
         try {
@@ -770,12 +899,25 @@ public class WebServiceManager {
                 int idPublicacion = Integer.parseInt(publicacionJson.get("idPublicacion").toString());
                 String titulo = publicacionJson.get("titulo").toString();
                 String descripcion = publicacionJson.get("descripcion").toString();
-                Date fecha = Date.valueOf(publicacionJson.get("fecha_creacion").toString());
+
+                String fechaString = publicacionJson.get("fecha_creacion").toString();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // Parsea el String a LocalDateTime
+                LocalDateTime localDateTime = LocalDateTime.parse(fechaString, formatter);
+
+                // Si necesitas solo la fecha (sin tiempo), extrae LocalDate
+                java.time.LocalDate localDate = localDateTime.toLocalDate();
+
+                // Convertimos LocalDate a java.sql.Date
+                Date fechaSQL = Date.valueOf(localDate);
+
                 int idUsuario = Integer.parseInt(publicacionJson.get("idUsuario").toString());
 
                 byte[] fotoBytes = Base64.getDecoder().decode(publicacionJson.get("foto").toString());
 
-                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia").toString());
+                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia") == null ? "0" : publicacionJson.get("idReferencia").toString());
 
                 // Consultamos las prendas de la publicacion
                 ArrayList<Prenda> prendas = (ArrayList<Prenda>) obtenerPrendasPorPublicacion(idPublicacion);
@@ -788,7 +930,7 @@ public class WebServiceManager {
                 ArrayList<Reaccion> reacciones = (ArrayList<Reaccion>) obtenerReaccionesPorPublicacion(idPublicacion);
 
                 Publicacion publicacion = new Publicacion(idPublicacion, idUsuario, titulo, descripcion, fotoBytes,
-                        idReferencia, fecha, prendas, comentarios, reacciones);
+                        idReferencia, fechaSQL, prendas, comentarios, reacciones);
 
                 publicaciones.add(publicacion);
             }
@@ -796,11 +938,12 @@ public class WebServiceManager {
             return publicaciones;
 
         } catch (IOException ex) {
-            System.out.println("Error al obtener publicaciones: " + ex.getMessage());
+            System.out.println("IO Error al obtener publicaciones: " + ex.getMessage());
         } catch (ParseException ex) {
-            System.out.println("Error al obtener publicaciones: " + ex.getMessage());
+            System.out.println("Error al parsear json al obtener publicaciones: " + ex.getMessage());
         } catch (Exception ex) {
             System.out.println("Error al obtener publicaciones: " + ex.getMessage());
+            ex.printStackTrace();
         }
         return null;
     }
@@ -830,11 +973,26 @@ public class WebServiceManager {
                 int idPublicacion = Integer.parseInt(publicacionJson.get("idPublicacion").toString());
                 String titulo = publicacionJson.get("titulo").toString();
                 String descripcion = publicacionJson.get("descripcion").toString();
-                Date fecha = Date.valueOf(publicacionJson.get("fecha_creacion").toString());
+                
+                
+                String fechaString = publicacionJson.get("fecha_creacion").toString();
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // Parsea el String a LocalDateTime
+                LocalDateTime localDateTime = LocalDateTime.parse(fechaString, formatter);
+
+                // Si necesitas solo la fecha (sin tiempo), extrae LocalDate
+                java.time.LocalDate localDate = localDateTime.toLocalDate();
+
+                // Convertimos LocalDate a java.sql.Date
+                Date fechaSQL = Date.valueOf(localDate);
+                
+                
 
                 byte[] fotoBytes = Base64.getDecoder().decode(publicacionJson.get("foto").toString());
 
-                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia").toString());
+                int idReferencia = Integer.parseInt(publicacionJson.get("idReferencia") == null ? "0" : publicacionJson.get("idReferencia").toString());
 
                 // Consultamos las prendas de la publicacion
                 ArrayList<Prenda> prendas = (ArrayList<Prenda>) obtenerPrendasPorPublicacion(idPublicacion);
@@ -847,7 +1005,7 @@ public class WebServiceManager {
                 ArrayList<Reaccion> reacciones = (ArrayList<Reaccion>) obtenerReaccionesPorPublicacion(idPublicacion);
 
                 Publicacion publicacion = new Publicacion(idPublicacion, idUsuario, titulo, descripcion, fotoBytes,
-                        idReferencia, fecha, prendas, comentarios, reacciones);
+                        idReferencia, fechaSQL, prendas, comentarios, reacciones);
 
                 publicaciones.add(publicacion);
             }
@@ -855,9 +1013,9 @@ public class WebServiceManager {
             return publicaciones;
 
         } catch (IOException ex) {
-            System.out.println("Error al obtener publicaciones por usuario: " + ex.getMessage());
+            System.out.println("IO Error al obtener publicaciones por usuario: " + ex.getMessage());
         } catch (ParseException ex) {
-            System.out.println("Error al obtener publicaciones por usuario: " + ex.getMessage());
+            System.out.println("Error al parsear  json al obtener publicaciones por usuario: " + ex.getMessage());
         } catch (Exception ex) {
             System.out.println("Error al obtener publicaciones por usuario: " + ex.getMessage());
         }
@@ -873,11 +1031,22 @@ public class WebServiceManager {
             publicacionJson.put("idUsuario", publicacion.getIdUsuario());
             publicacionJson.put("titulo", publicacion.getTitulo());
             publicacionJson.put("descripcion", publicacion.getDescripcion());
-            publicacionJson.put("idReferencia", publicacion.getIdReferencia());
+            if (publicacion.getIdReferencia() > 0) {
+                publicacionJson.put("idReferencia", publicacion.getIdReferencia());
+            }
 
             if (publicacion.getFoto() != null) {
                 publicacionJson.put("foto", Base64.getEncoder().encodeToString(publicacion.getFoto()));
             }
+
+//            System.out.println("JSON REQUEST TO SEND: " + publicacionJson.toJSONString());
+//            try (FileWriter file = new FileWriter("log_publicacion.json")) {
+//                file.write(publicacionJson.toJSONString());
+//                file.flush();
+//                System.out.println("JSON escrito en el archivo log_publicacion.json");
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
 
             String response = Request.Post(url)
                     .bodyString(publicacionJson.toJSONString(), ContentType.APPLICATION_JSON)
@@ -887,6 +1056,7 @@ public class WebServiceManager {
 
             JSONObject resultJson = (JSONObject) parser.parse(response);
 
+            //System.out.println("RESSULT AL GUARDAR PUB:" + resultJson.toString());
             if (!Boolean.parseBoolean(resultJson.get("OK").toString())) {
                 String errorMessage = (String) resultJson.get("error");
                 throw new Exception("Error en la solicitud: " + errorMessage);
@@ -897,9 +1067,10 @@ public class WebServiceManager {
             return idPublicacion;
 
         } catch (IOException ex) {
-            System.out.println("Error al guardar publicacion: " + ex.getMessage());
+            System.out.println("IO Error al guardar publicacion: " + ex.getMessage());
         } catch (ParseException ex) {
-            System.out.println("Error al guardar publicacion: " + ex.getMessage());
+            System.out.println("Error de parseo al guardar publicacion: " + ex.getMessage());
+            ex.printStackTrace();
         } catch (Exception ex) {
             System.out.println("Error al guardar publicacion: " + ex.getMessage());
         }

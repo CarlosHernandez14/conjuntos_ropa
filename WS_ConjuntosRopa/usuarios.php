@@ -10,7 +10,7 @@
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
                 if (isset($_GET['idUsuario'])) {
-                    $usuario = $db->getUsuarios($_GET['idUsuario']);
+                    $usuario = $db->getUsuarioById($_GET['idUsuario']);
                     echo json_encode([
                         'OK' => true,
                         'message' => 'Usuario encontrado',
